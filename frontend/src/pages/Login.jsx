@@ -43,9 +43,13 @@ function Login() {
 
     } catch (error) {
 
-      alert(
-        error.response?.data?.message
-      );
+      console.log(error);
+
+        alert(
+            JSON.stringify(
+                error.response?.data
+            )
+        );
     }
   };
 
