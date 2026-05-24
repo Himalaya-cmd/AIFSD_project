@@ -8,6 +8,15 @@ import EmployeeForm from "../components/EmployeeForm";
 import EmployeeList from "../components/EmployeeList";
 import Analytics from "../components/Analytics";
 import AIRecommendation from "../components/AIRecommendation";
+import Navbar from "../components/Navbar";
+
+const getEmployees = async () => {
+  const res = await API.get(
+    "/employees"
+  );
+
+  return res.data;
+};
 
 function Dashboard() {
 
@@ -22,11 +31,9 @@ function Dashboard() {
 
     try {
 
-      const res = await API.get(
-        "/employees"
-      );
+      const data = await getEmployees();
 
-      setEmployees(res.data);
+      setEmployees(data);
 
     } catch (error) {
 
@@ -37,7 +44,25 @@ function Dashboard() {
 
   useEffect(() => {
 
-    fetchEmployees();
+    let isMounted = true;
+
+    const loadEmployees = async () => {
+      try {
+        const data = await getEmployees();
+
+        if (isMounted) {
+          setEmployees(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    loadEmployees();
+
+    return () => {
+      isMounted = false;
+    };
 
   }, []);
 
@@ -54,29 +79,7 @@ function Dashboard() {
 
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white p-8">
 
-      <div className="flex justify-between items-center mb-10">
-
-        <div>
-
-          <h1 className="text-5xl font-bold tracking-wide">
-            Employee AI Dashboard
-          </h1>
-
-          <p className="text-slate-400 mt-2">
-            AI Powered Employee Analytics System
-          </p>
-
-        </div>
-
-
-        <button
-          onClick={logout}
-          className="bg-red-500 hover:bg-red-600 transition px-5 py-2 rounded-xl font-semibold"
-        >
-          Logout
-        </button>
-
-      </div>
+      <Navbar onLogout={logout} />
 
 
       <Analytics employees={employees} />
